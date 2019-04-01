@@ -16,13 +16,14 @@ GetCursor:
     mov AH, 0x03
     int 0x10
 
-MovCursor:
+mov_cursor:
 ; Move the cursor to a specified position to write
-    mov BH, 0
-    mov DH, 0x0F
-    mov DL, 0x0F
-    mov AH, 0x02
-    int 0x10
+	mov BH, 0
+	mov DH, 0x0F
+	mov DL, 0x0F
+	mov AH, 0x02
+	int 0x10
+	ret
 
 ;PutChar:
 ; Print a character at the designated position
