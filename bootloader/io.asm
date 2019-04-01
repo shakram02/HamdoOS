@@ -2,38 +2,33 @@
 ; io.asm
 ; I/O related routines
 ;*********************
-USE16
+bits 16    ; 16-bit mode
 
-;SetGraphicsMode:
-; The colorful mode with colors
-;    mov AL, 0x13 ; 13h - graphical mode. 40x25. 256 colors. 320x200 pixels. 1 page
-;    mov AH, 0x40
-;    int 0x10
-
-GetCursor:
+get_cursor:
 ; Load information about the cursor, I'll use that with gdb to get info
     mov BH, 0
     mov AH, 0x03
     int 0x10
 
-mov_cursor:
+move_cursor:
 ; Move the cursor to a specified position to write
-	mov BH, 0
-	mov DH, 0x0F
-	mov DL, 0x0F
-	mov AH, 0x02
-	int 0x10
-	ret
+    mov DH, 0x0F
+    mov DL, 0x0A
+    mov ah, 0x02
+    int 0x10
+    ret
 
-;PutChar:
-; Print a character at the designated position
-;    mov AL, BL
-;    mov BH, 0xAF    ; Set background color
-;    mov CX, 0xF     ; Repeat 16 times
-;    MISSING AH
-;    int 0x10
+print_char:
+; Prints a string to the screen, character by character
+    lodsb
+    cmp al, 0x0
+    je .done
+    mov ah, 0x0E
+    int 0x10
+    jmp print_char
+    .done ret
 
-Print:
+print_string:
 ; Prints a string to the screen
     mov AL, 0x01    ; Update cursor after writing
     mov DH, 0x10
