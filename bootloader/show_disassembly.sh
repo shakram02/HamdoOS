@@ -1,0 +1,1 @@
+ndisasm bootloader.o | less
