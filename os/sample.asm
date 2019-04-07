@@ -16,5 +16,5 @@ call print_chars
 
 
 hlt
-%include "io.asm"
-succ_msg: db "Program loaded successfully", 0x0
+%include "../asm_utils/io.asm"
+succ_msg: db "Program loaded successfully", 0x0D, 0x0A, 0x0
