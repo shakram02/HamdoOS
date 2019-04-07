@@ -12,9 +12,10 @@ mov al, 1
 add ax, 0x66
 
 mov si, succ_msg
-call print_chars
-
+call print_string
 
 hlt
+
 %include "../asm_utils/io.asm"
+
 succ_msg: db "Program loaded successfully", 0x0D, 0x0A, 0x0
