@@ -7,13 +7,20 @@ org 0x7C00              ; Starting address after PROC finishes
 
 jmp init
 
+load_bootloader:
+	mov ah, 0x2         ; Read sectors from drive [BIOS Interrupt]
+    mov al, 0x2         ; Read 2 sectors from drive
+    mov ch, 0x0         ; Cylinder 0
+    mov cl, 0x2         ; Sector 2
+    mov dh, 0x0         ; Head 0
 
-
-; read_disk:
-; mov ch, 0x0
-; mov cl, 0x2
-; mov dh, 0x0
-; mov ah, 0x02
+    mov bx, bootloader_load_addr
+    mov es, bx      ; ES = 0x500
+    xor bx, bx      ; Clear BX
+    int 0x13        ; call BIOS
+    ret             ; You can only be guaranteed that your bootloader will be loaded and run from physical address 0x00007c00
+                        ; and that the boot drive number is loaded into the DL register.
+                        ; https://stackoverflow.com/questions/34178717/load-segment-from-floppy-with-int13h
 
 
 init:
@@ -21,36 +28,23 @@ init:
     cld                 ; Set the direction flag to be positive direction
                         ; call move_cursor
     mov si, msg
-    call print_chars
+    call print_string
 
-    mov ah, 0x2         ; Read sectors from drive [BIOS Interrupt]
-    mov al, 0x2         ; Read 2 sectors from drive
-    mov ch, 0x0         ; Cylinder 0
-    mov cl, 0x2         ; Sector 2
-    mov dh, 0x0         ; Head 0
-
-    mov bx, 0x0500
-    mov es, bx          ; ES = 0x500
-    xor bx, bx          ; Clear BX
-    int 0x13            ; call BIOS
-                        ; You can only be guaranteed that your bootloader will be loaded and run from physical address 0x00007c00
-                        ; and that the boot drive number is loaded into the DL register.
-                        ; https://stackoverflow.com/questions/34178717/load-segment-from-floppy-with-int13h
+	call load_bootloader
     jc print_fail       ; Jump if CF is set (error) ( return value from interrupt )
-	; cmp al, 0x2
-	; je print_fail
 
-    jmp 0x0500:0x0        ; jump and execute the code
+    jmp bootloader_load_addr:0x0        ; jump and execute the code
 
 print_fail:
     mov si, fail_msg
-    jmp print_chars
+    jmp print_string
     hlt
 
     ; TODO: print a single char
 
 msg: db "Welcome to HamdoOS!", 0x0D, 0x0A, 0x0
 fail_msg: db "Failed to read disk", 0x0D, 0x10, 0x0
+bootloader_load_addr: equ 0x0500
 
 %include "../asm_utils/io.asm"
 
