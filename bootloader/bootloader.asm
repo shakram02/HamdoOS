@@ -36,8 +36,9 @@ init:
                         ; You can only be guaranteed that your bootloader will be loaded and run from physical address 0x00007c00
                         ; and that the boot drive number is loaded into the DL register.
                         ; https://stackoverflow.com/questions/34178717/load-segment-from-floppy-with-int13h
-
-    jc print_fail       ; Jump if CF is set (error)
+    jc print_fail       ; Jump if CF is set (error) ( return value from interrupt )
+	; cmp al, 0x2
+	; je print_fail
 
     jmp 0x0500:0x0        ; jump and execute the code
 
@@ -48,10 +49,10 @@ print_fail:
 
     ; TODO: print a single char
 
-msg: db "Welcome to Ovizivo Operating System!", 0x0
-fail_msg: db "Failed to read disk", 0x0
+msg: db "Welcome to HamdoOS!", 0x0D, 0x0A, 0x0
+fail_msg: db "Failed to read disk", 0x0D, 0x10, 0x0
 
-%include "io.asm"
+%include "../asm_utils/io.asm"
 
 ; The bootloader has to be 512 byets. Clear the rest of
 ; the bytes with 0
