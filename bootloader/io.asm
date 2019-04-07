@@ -29,11 +29,11 @@ print_chars:
     jmp print_chars
     .done ret
 
-; print_string:
-;     ; Prints a string from bp to the screen
-;     mov AL, 0x01 ; Update cursor after writing
-;     mov DH, 0x0F
-;     mov DL, 0x0F
-;     mov AH, 0x13 ; function 13 - write string
-;     int 0x10
-; 	ret
+print_string:
+    ; Prints a string from bp to the screen
+    mov AL, 0x01 ; Update cursor after writing
+    mov DH, 0x0F
+    mov DL, 0x0F
+    mov AH, 0x13 ; function 13 - write string
+    int 0x10
+	ret

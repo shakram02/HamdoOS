@@ -3,7 +3,9 @@
 ; ******************
 ORG 0x0000
 
-mov ax, cs 
+; Make sure the data segment is pointing
+; to the same location as code segment
+mov ax, cs
 mov ds, ax
 
 mov al, 1
