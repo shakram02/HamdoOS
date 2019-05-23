@@ -1,3 +1,7 @@
+*
+!/**/
+!*.*
 build/*
 *.img
-scratch_disk/
+*.o
+*.elf
