@@ -1,2 +1,3 @@
 build/*
 *.img
+scratch_disk/
