@@ -3,7 +3,7 @@
 ; Simple bootloader
 ; *********************
 bits 16                 ; 16-bit mode
-org 0x7C00              ; Starting address after PROC finishes
+; org 0x7C00              ; Starting address after PROC finishes
 
 jmp init
 

@@ -19,8 +19,8 @@ bootdisk: bootloader os
 	dd conv=notrunc if=$(OS) of=$(DISK_IMG) bs=512 count=1 seek=1
 
 qemu:
-	qemu-system-i386 -machine q35 -fda disk.img -gdb tcp::26000 -S
-
+	# qemu-system-i386 -machine q35 -fda disk.img -gdb tcp::26000 -S
+		qemu-system-i386 -machine q35 -drive file=disk.img,format=raw -gdb tcp::26000 -S
 clean:
 	make -C os clean
 	make -C bootloader clean
