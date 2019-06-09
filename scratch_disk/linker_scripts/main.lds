@@ -2,16 +2,16 @@ ENTRY(main) /* Set main to be the entry point of the program */
 
 PHDRS
 {
-    null PT_NULL;
+    headers PT_PHDR FILEHDR PHDRS AT(0x500);
     /*
     FLAGS:
-    E: 0x001
-    W: 0x010
-    R: 0x100
+    E: 0x1
+    W: 0x2
+    R: 0x4
     The values are put as decimal
-    e.g. FLAGS (3) is equivalent to WE
+    e.g. FLAGS (0x3) is equivalent to WE
     */
-    code PT_LOAD FLAGS (5);
+    code PT_LOAD FILEHDR FLAGS (0x1 | 0x4);
 }
 
 SECTIONS
@@ -27,4 +27,5 @@ SECTIONS
     . = 0x8000000;
     .data : { *(.data) }
     .bss : { *(.bss) }
+    /DISCARD/ : { *(.eh_frame) }
 }
