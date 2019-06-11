@@ -40,12 +40,8 @@ init:
 
     call load_bootloader
     jc print_fail                ; Jump if CF is set (error) ( return value from interrupt )
-    mov ax, bootloader_load_addr
-    mov bx, 0x10
-    mul bx
-    mov bx,0x100
-    add ax,bx
-    jmp ax                       ; jump and execute the code @ 0x7c2f
+    jmp 0x5100                   ; Can't adjust the address using ES:NX for some reason, will leave it hardcoded :3
+                                 ; TODO: gdb isn't showing any sources
 
 print_fail:
     mov si, fail_msg
@@ -56,7 +52,7 @@ print_fail:
 
 msg: db "Welcome to HamdoOS!", 0x0D, 0x0A, 0x0
 fail_msg: db "Failed to read disk", 0x0D, 0x10, 0x0
-bootloader_load_addr: equ 0x00000500
+bootloader_load_addr: equ 0x500
 
 %include "../asm_utils/io.asm"
 
