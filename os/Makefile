@@ -1,5 +1,6 @@
 BUILD_DIR=../build/os
 OS=$(BUILD_DIR)/os
+SHELL := /bin/bash
 
 CFLAGS+=-ffreestanding -nostdlib -gdwarf-4 -m32 -ggdb3
 
@@ -10,10 +11,10 @@ all: $(OS)
 
 
 $(BUILD_DIR)/%.o: %.c
-	gcc $(CFLAGS) -c $< -o $@
+	$(TARGET)-gcc -c $< -o $@
 
 $(OS): $(OS_OBJS)
-	ld -m elf_i386 --nmagic -T os.ld $(OS_OBJS) -o $@
+	$(TARGET)-ld -m elf_i386 --nmagic -T os.ld $(OS_OBJS) -o $@
 
 clean:
 	rm $(BUILD_DIR)/*
