@@ -3,13 +3,18 @@
 ; Simple bootloader
 ; *********************
 bits 16                          ; 16-bit mode
+; After loading the boot sector into memory the BIOS sets the IP register to 0x7C00 and sets the CS register to 0x0 (or just 0).
+; Together this memory address looks like 0x0:0x7C00. https://web.archive.org/web/20130119004022/http://supernovah.com/Tutorials/BootSector2.php
 org 0x7C00              ; Starting address (set by the linker script)
 
 mov ax, 0
 mov ss, ax
 mov sp, $
 
-jmp init
+; The trick is, if we specify a segment, even if it is 0x0, the jmp will be a far jump 
+; and the CS register will be loaded with the value 0x0 and the IP register will be loaded 
+; with the address of the next instruction to be executed. 
+jmp 0x0:init
 
 load_os:
     mov ah, 0x2                  ; Read sectors from drive [BIOS Interrupt]
@@ -56,7 +61,7 @@ print_fail:
     jmp print_string
     hlt
 
-msg: db "Welcome to HamdoOS!", 0x0D, 0x0A, 0x0
+msg: db "[STAGE1]: Welcome to HamdoOS!", 0x0D, 0x0A, 0x0
 fail_msg: db 0x0,"Failed to read disk", 0x0D, 0x10, 0x0
 bootloader_load_addr: equ 0x050
 
