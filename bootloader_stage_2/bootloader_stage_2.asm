@@ -10,5 +10,5 @@ init:
 %include "../asm_utils/io.asm"
 
 SECTION .data
-    msg: db "Loading OS...", 0x0D, 0x0A, 0x0
-    times 512 - ($-$$) db 0x0
+    msg: db "[STAGE2]: Loading OS...",  0x0, 0x0D, 0x0A
+    times 512 - ($-$$) db 0x3F

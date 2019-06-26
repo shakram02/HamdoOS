@@ -40,11 +40,13 @@ init:
     mov ax, 0x7000
     mov ss, ax
     mov sp, 0xC00
+    mov dx, 0xF0
+
+    call clear_background
 
     mov si, msg
-    call move_cursor
     call print_string
-
+    
     ; http://3zanders.co.uk/2017/10/16/writing-a-bootloader2/
     ; mov ax, 0x2401
     ; int 0x15 ; enable A20 bit
@@ -62,8 +64,16 @@ print_fail:
     jmp print_string
     hlt
 
-msg: db "[STAGE1]: Welcome to HamdoOS!", 0x0D, 0x0A, 0x0
-fail_msg: db 0x0,"Failed to read disk", 0x0D, 0x10, 0x0
+; When we reference our string we need the physical memory location that this string will exist at in memory. 
+; Our boot sector is loaded at the memory location 0x7C00 and our string appears directly after our instructions
+; so our string won't be far after that.
+; Nasm knows the offset of the start of our string based on the code and data it compiles before our string. 
+; Nasm then takes that offset and adds it to the address given to it by the ORG directive which is 0x7C00 in our 
+; case (where our boot sector is loaded into memory).
+; Because of the ORG directive, Nasm knows exactly where to find our string in the physical memory during execution. 
+; https://web.archive.org/web/20130119003944/http://supernovah.com/Tutorials/BootSector3.php
+msg: db "[STAGE1]: Welcome to HamdoOS!", 0x0A, 0x0
+fail_msg: db "Failed to read disk", 0x0A, 0x0
 bootloader_load_addr: equ 0x050
 
 %include "../asm_utils/io.asm"
