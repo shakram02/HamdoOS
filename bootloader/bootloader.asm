@@ -12,7 +12,7 @@ org 0x7C00                         ; Starting address (set by the linker script)
 ; with the address of the next instruction to be executed.
 jmp 0x0:init
 
-load_os:
+load_stage_two:
     mov ah, 0x2                  ; Read sectors from drive [BIOS Interrupt]
     mov al, 0x5                  ; Read sectors from drive
     mov ch, 0x0                  ; Cylinder 0
@@ -47,7 +47,7 @@ init:
     mov si, msg
     call print_string
 
-    call load_os
+    call load_stage_two
     jc print_fail                ; Jump if CF is set (error) ( return value from interrupt )
 
     jmp 0x500   ; Free memory range:  500 - 9FBFF (Load stage 2)

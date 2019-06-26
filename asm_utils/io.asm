@@ -5,6 +5,24 @@
 bits 16            ; 16-bit mode
 
 print_string:
+    push ax
+    mov ah, 0x0E    ; For in 10h
+
+.print_loop:
+    ; Loads a byte (starting from SI) into AL,
+    ; pointer is auto-incremented according to direction flag (DF)
+    lodsb
+    ; Prints a string to the screen, character by character
+    cmp al, 0x0
+    je print_string.done
+    int 0x10
+    jmp print_string.print_loop
+
+.done:
+    pop ax
+    ret
+
+print_string_text_buffer:
     ; Prints a string at the specified location by DH and DL
     push cx
     push bx
@@ -20,7 +38,7 @@ print_string:
     lodsb
     ; Prints a string to the screen, character by character
     cmp al, 0x0
-    je print_string.done
+    je print_string_text_buffer.done
 
     ; TODO: print to correct location
     ; cmp al, 0x0A
@@ -29,7 +47,7 @@ print_string:
     mov [es:bx], al
     add bx,2
 
-    jmp print_string.loop
+    jmp print_string_text_buffer.loop
 
 .done:
     pop ax
@@ -38,10 +56,10 @@ print_string:
     pop cx
     ret
 
-; .adjust_for_new_line:
-; TODO: increment BX according to DH and DL
-; add bx, screen_width
-; jmp print_string.loop
+    ; .adjust_for_new_line:
+    ; TODO: increment BX according to DH and DL
+    ; add bx, screen_width
+    ; jmp print_string_text_buffer.loop
 
 clear_background:
     push cx
