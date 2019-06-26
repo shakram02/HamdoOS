@@ -17,6 +17,7 @@ load_os:
     mov al, 0x5                  ; Read sectors from drive
     mov ch, 0x0                  ; Cylinder 0
     mov cl, 0x2                  ; Sector 2
+    mov dl, 0x80                 ; Our disk image represents the first drive for QEMU (check out the Makefile) https://en.wikipedia.org/wiki/INT_13H
     mov dh, 0x0                  ; Head 0
 
     mov bx, bootloader_load_addr ; The address is calculated as: 16 * ES + BX
@@ -41,6 +42,7 @@ init:
     mov sp, 0xC00
 
     mov si, msg
+    call move_cursor
     call print_string
 
     ; http://3zanders.co.uk/2017/10/16/writing-a-bootloader2/
