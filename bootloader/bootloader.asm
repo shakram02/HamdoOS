@@ -2,14 +2,14 @@
 ; bootloader.asm
 ; Simple bootloader
 ; *********************
-bits 16                          ; 16-bit mode
-; After loading the boot sector into memory the BIOS sets the IP register to 0x7C00 and sets the CS register to 0x0 (or just 0).
-; Together this memory address looks like 0x0:0x7C00. https://web.archive.org/web/20130119004022/http://supernovah.com/Tutorials/BootSector2.php
-org 0x7C00              ; Starting address (set by the linker script)
+bits 16                            ; 16-bit mode
+                                   ; After loading the boot sector into memory the BIOS sets the IP register to 0x7C00 and sets the CS register to 0x0 (or just 0).
+                                   ; Together this memory address looks like 0x0:0x7C00. https://web.archive.org/web/20130119004022/http://supernovah.com/Tutorials/BootSector2.php
+org 0x7C00                         ; Starting address (set by the linker script)
 
-; The trick is, if we specify a segment, even if it is 0x0, the jmp will be a far jump 
-; and the CS register will be loaded with the value 0x0 and the IP register will be loaded 
-; with the address of the next instruction to be executed. 
+; The trick is, if we specify a segment, even if it is 0x0, the jmp will be a far jump
+; and the CS register will be loaded with the value 0x0 and the IP register will be loaded
+; with the address of the next instruction to be executed.
 jmp 0x0:init
 
 load_os:
@@ -46,34 +46,27 @@ init:
 
     mov si, msg
     call print_string
-    
-    ; http://3zanders.co.uk/2017/10/16/writing-a-bootloader2/
-    ; mov ax, 0x2401
-    ; int 0x15 ; enable A20 bit
-    
-    ; mov ax, 0x3
-    ; int 0x10 ; set vga text mode 3
 
     call load_os
     jc print_fail                ; Jump if CF is set (error) ( return value from interrupt )
 
-    jmp 0x500   ; Free memory range:  500 - 9FBFF
+    jmp 0x500   ; Free memory range:  500 - 9FBFF (Load stage 2)
 
 print_fail:
     mov si, fail_msg
     jmp print_string
     hlt
 
-; When we reference our string we need the physical memory location that this string will exist at in memory. 
+; When we reference our string we need the physical memory location that this string will exist at in memory.
 ; Our boot sector is loaded at the memory location 0x7C00 and our string appears directly after our instructions
 ; so our string won't be far after that.
-; Nasm knows the offset of the start of our string based on the code and data it compiles before our string. 
-; Nasm then takes that offset and adds it to the address given to it by the ORG directive which is 0x7C00 in our 
+; Nasm knows the offset of the start of our string based on the code and data it compiles before our string.
+; Nasm then takes that offset and adds it to the address given to it by the ORG directive which is 0x7C00 in our
 ; case (where our boot sector is loaded into memory).
-; Because of the ORG directive, Nasm knows exactly where to find our string in the physical memory during execution. 
+; Because of the ORG directive, Nasm knows exactly where to find our string in the physical memory during execution.
 ; https://web.archive.org/web/20130119003944/http://supernovah.com/Tutorials/BootSector3.php
-msg: db "[STAGE1]: Welcome to HamdoOS!", 0x0A, 0x0
-fail_msg: db "Failed to read disk", 0x0A, 0x0
+msg: db "[STAGE1]: Welcome to HamdoOS!", 0x0A, 0x0D, 0x0
+fail_msg: db "Failed to read disk", 0x0A, 0x0D, 0x0
 bootloader_load_addr: equ 0x050
 
 %include "../asm_utils/io.asm"
@@ -81,4 +74,4 @@ bootloader_load_addr: equ 0x050
 ; The bootloader has to be 512 byets. Clear the rest of
 ; the bytes with 0
 times 510 - ($-$$) db 0x0
-dw 0xAA55                        ; Boot signature
+dw 0xAA55                          ; Boot signature
