@@ -7,10 +7,6 @@ bits 16                          ; 16-bit mode
 ; Together this memory address looks like 0x0:0x7C00. https://web.archive.org/web/20130119004022/http://supernovah.com/Tutorials/BootSector2.php
 org 0x7C00              ; Starting address (set by the linker script)
 
-mov ax, 0
-mov ss, ax
-mov sp, $
-
 ; The trick is, if we specify a segment, even if it is 0x0, the jmp will be a far jump 
 ; and the CS register will be loaded with the value 0x0 and the IP register will be loaded 
 ; with the address of the next instruction to be executed. 
@@ -35,11 +31,14 @@ load_os:
 init:
     cli                          ; Disable interrupts
     cld                          ; Set the direction flag to be positive direction
-                                 ; call move_cursor
-
                                  ; start the stack right before the bootloader (stack grows downwards)
                                  ; https://wiki.osdev.org/My_Bootloader_Does_Not_Work
 
+    ; Setup the stack to be at 0x70000:C00
+    ; the stack grows downwards
+    mov ax, 0x7000
+    mov ss, ax
+    mov sp, 0xC00
 
     mov si, msg
     call print_string
@@ -54,7 +53,7 @@ init:
     call load_os
     jc print_fail                ; Jump if CF is set (error) ( return value from interrupt )
 
-    jmp 0x500
+    jmp 0x500   ; Free memory range:  500 - 9FBFF
 
 print_fail:
     mov si, fail_msg
