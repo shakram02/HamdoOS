@@ -9,6 +9,6 @@ layout reg
 target remote localhost:26000
 b *0x7c00
 b *0x7c2f
-b *0x600
-add-symbol-file ./build/bootloader/bootloader.o.elf
-add-symbol-file ./build/os/os
+b *0x500
+# add-symbol-file ./build/bootloader/bootloader.o.elf
+# add-symbol-file ./build/os/os
